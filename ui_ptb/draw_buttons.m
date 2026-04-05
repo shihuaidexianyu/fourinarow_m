@@ -12,6 +12,6 @@ for i = 1:numel(ids)
 end
 
 if strcmp(screen_name, 'result')
-    DrawFormattedText(ui.win, '点击按钮继续，或按 ESC 退出', 'center', button_map.exit_game(4)+25, ui.colors.text);
+    DrawFormattedText(ui.win, 'Click a button to continue, or press ESC to exit.', 'center', button_map.exit_game(4)+25, ui.colors.text);
 end
 end

@@ -18,7 +18,11 @@ else
     [win, rect] = PsychImaging('OpenWindow', screen_idx, bg, [100, 100, 1200, 900]);
 end
 
-HideCursor(win);
+if isfield(config, 'ui') && isfield(config.ui, 'hide_cursor') && config.ui.hide_cursor
+    HideCursor(win);
+else
+    ShowCursor;
+end
 Screen('TextFont', win, 'Microsoft YaHei UI');
 Screen('TextSize', win, 28);
 

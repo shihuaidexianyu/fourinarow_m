@@ -26,6 +26,7 @@ config.ui.illegal_message_duration_sec = 0.8;
 config.ui.title_text = 'Four-in-a-Row';
 config.ui.instruction_text = 'Click START to begin.';
 config.ui.show_config_summary = true;
+config.ui.hide_cursor = false;
 
 config.marker.enable = true;
 config.marker.enable_illegal_click_marker = true;
