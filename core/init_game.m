@@ -5,6 +5,7 @@ rows = config.game.rows;
 cols = config.game.cols;
 
 state.board = zeros(rows, cols);
+state.connect_n = config.game.connect_n;
 state.current_player = config.game.first_player;
 state.first_player = config.game.first_player;
 state.move_count = 0;

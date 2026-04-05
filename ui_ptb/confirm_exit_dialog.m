@@ -7,6 +7,8 @@ Screen('FillRect', ui.win, ui.colors.bg);
 DrawFormattedText(ui.win, 'Exit game?\n\nY: Exit    N: Continue', 'center', 'center', ui.colors.text);
 Screen('Flip', ui.win);
 
+KbReleaseWait;
+
 while true
     [~, ~, keyCode] = KbCheck;
     if keyCode(KbName('Y')) || keyCode(KbName('y'))

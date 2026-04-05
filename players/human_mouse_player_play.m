@@ -6,15 +6,6 @@ layout = runtime_context.layout;
 action = [];
 meta = struct('aborted', false, 'is_illegal', false);
 
-if nargin < 2
-    player_config = struct();
-end
-
-duration = 0.8;
-if isfield(player_config, 'ui') && isfield(player_config.ui, 'illegal_message_duration_sec')
-    duration = player_config.ui.illegal_message_duration_sec;
-end
-
 while true
     [~, ~, keyCode] = KbCheck;
     if keyCode(KbName('ESCAPE'))
@@ -45,16 +36,7 @@ while true
                 meta.illegal_row = row;
                 meta.illegal_col = col;
                 meta.illegal_time = GetSecs();
-
-                transient.status_text = 'Illegal move. Please try again.';
-                transient.illegal_until = GetSecs() + duration;
-                draw_game_screen(ui, layout, struct( ...
-                    'board', obs.board, ...
-                    'current_player', obs.current_player, ...
-                    'winning_cells', zeros(0,2), ...
-                    'result', 'ongoing', ...
-                    'game_over', false), transient);
-                Screen('Flip', ui.win);
+                return;
             end
         end
     end

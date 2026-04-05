@@ -57,10 +57,10 @@ try
                 state_name = 'in_game';
 
             case 'in_game'
-                transient_ui.status_text = sprintf('Turn: %s', ternary(state.current_player==1, 'Black', 'White'));
                 transient_ui.illegal_until = -inf;
 
                 while ~state.game_over
+                    transient_ui.status_text = sprintf('Turn: %s', ternary(state.current_player==1, 'Black', 'White'));
                     draw_game_screen(ui, layout, state, transient_ui);
                     [~, board_ready_time] = Screen('Flip', ui.win);
 
@@ -100,6 +100,8 @@ try
                                     'move_count', state.move_count, 'is_illegal', true);
                                 [config, trial_log] = emit_and_log(config, trial_log, 'response_illegal_click', meta.illegal_time, payload);
                             end
+                            transient_ui.status_text = 'Illegal move. Please try again.';
+                            transient_ui.illegal_until = GetSecs() + config.ui.illegal_message_duration_sec;
                         end
                         continue;
                     end

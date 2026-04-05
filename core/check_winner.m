@@ -5,7 +5,7 @@ board = state.board;
 row0 = action.row;
 col0 = action.col;
 player = board(row0, col0);
-connect_n = 4;
+connect_n = state.connect_n;
 
 dirs = [0, 1; 1, 0; 1, 1; 1, -1];
 best_cells = zeros(0, 2);
