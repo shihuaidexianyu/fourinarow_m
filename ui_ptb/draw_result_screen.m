@@ -1,16 +1,15 @@
 function draw_result_screen(ui, layout, state, config)
-%DRAW_RESULT_SCREEN Draw final board and result actions.
+%DRAW_RESULT_SCREEN 绘制结果页：棋盘（含高亮）、结果文字、三个按钮。
 
-if nargin < 4
-    config = struct();
-end
+if nargin < 4, config = struct(); end
 
 Screen('FillRect', ui.win, ui.colors.bg);
 draw_board(ui, layout);
-draw_pieces(ui, layout, state);
+draw_pieces(ui, layout, state);   % 含胜利高亮
 
 has_ui_cfg = isfield(config, 'ui');
 
+% ---- 结果标题 ----
 switch state.result
     case 'black_win'
         title = get_cfg_text(config, has_ui_cfg, 'black_win_text', 'Black wins');
@@ -24,10 +23,11 @@ end
 
 draw_text(ui.win, title, 'center', layout.title_y, ui.colors.text);
 
+% ---- 按钮 ----
 labels = { ...
     get_cfg_text(config, has_ui_cfg, 'replay_button_text', 'Play Again'), ...
-    get_cfg_text(config, has_ui_cfg, 'back_button_text', 'Back to Start'), ...
-    get_cfg_text(config, has_ui_cfg, 'exit_button_text', 'Exit')};
+    get_cfg_text(config, has_ui_cfg, 'back_button_text',   'Back to Start'), ...
+    get_cfg_text(config, has_ui_cfg, 'exit_button_text',   'Exit')};
 
 draw_buttons(ui, layout.result_buttons, ...
     {'replay', 'back_to_start', 'exit_game'}, ...
@@ -36,6 +36,7 @@ draw_buttons(ui, layout.result_buttons, ...
 end
 
 function out = get_cfg_text(config, has_ui_cfg, field_name, fallback)
+%GET_CFG_TEXT 从 config.ui 读取文本，不存在则返回 fallback。
 if has_ui_cfg && isfield(config.ui, field_name)
     out = config.ui.(field_name);
 else

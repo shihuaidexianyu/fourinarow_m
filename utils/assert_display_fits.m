@@ -1,5 +1,6 @@
 function assert_display_fits(screen_w_px, screen_h_px, board_w_px, board_h_px, reserved_h_px, detail)
-%ASSERT_DISPLAY_FITS Ensure board + reserved UI area fits safely.
+%ASSERT_DISPLAY_FITS 检查棋盘 + UI 预留区域是否能在屏幕内安全显示。
+%   超出允许范围则报错并给出详细诊断信息。
 
 max_board_w = floor(screen_w_px * 0.95);
 max_board_h = floor((screen_h_px - reserved_h_px) * 0.95);

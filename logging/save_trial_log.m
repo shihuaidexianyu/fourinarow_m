@@ -1,10 +1,12 @@
 function save_trial_log(trial, config)
-%SAVE_TRIAL_LOG Save .mat trial log file.
+%SAVE_TRIAL_LOG 将单局日志保存为 .mat 文件。
+%   文件名格式：trial_<时间戳>_<game_id>.mat
 
 if ~config.logging.enable
     return;
 end
 
+% 确保保存目录存在
 save_dir = config.logging.save_dir;
 if ~isfolder(save_dir)
     if isfield(config, 'runtime') && isfield(config.runtime, 'project_root') && ~isfolder(save_dir)

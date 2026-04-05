@@ -1,5 +1,6 @@
 function cell_rc = hit_test_cell(layout, mouse_x, mouse_y)
-%HIT_TEST_CELL Return [row, col] if mouse is inside a board cell.
+%HIT_TEST_CELL 检测鼠标是否在某个棋盘格内。
+%   命中返回 [row, col]，否则返回空矩阵。
 
 cell_rc = [];
 rows = size(layout.cell_rects, 1);

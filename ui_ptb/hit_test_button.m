@@ -1,5 +1,6 @@
 function button_id = hit_test_button(layout, mouse_x, mouse_y, screen_name)
-%HIT_TEST_BUTTON Return button id string or ''.
+%HIT_TEST_BUTTON 检测鼠标是否在某个按钮内。
+%   命中返回按钮 id 字符串，否则返回空字符串。
 
 button_id = '';
 

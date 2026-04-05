@@ -1,17 +1,19 @@
 function draw_start_screen(ui, layout, config)
-%DRAW_START_SCREEN Draw start page.
+%DRAW_START_SCREEN 绘制开始页：标题、提示语、开始按钮、配置摘要。
 
 Screen('FillRect', ui.win, ui.colors.bg);
 
 draw_text(ui.win, config.ui.title_text, 'center', layout.title_y, ui.colors.text);
 draw_text(ui.win, config.ui.instruction_text, 'center', layout.title_y + 45, ui.colors.text);
 
+% 开始按钮
 start_label = 'START';
 if isfield(config.ui, 'start_button_text')
     start_label = config.ui.start_button_text;
 end
 draw_buttons(ui, struct('start_game', layout.start_button), {'start_game'}, {start_label}, 'start', config);
 
+% 配置摘要
 if config.ui.show_config_summary
     human_color = ternary(config.game.human_player==1, '黑方', '白方');
     agent_color = ternary(config.game.agent_player==1, '黑方', '白方');
@@ -25,9 +27,5 @@ end
 end
 
 function out = ternary(cond, a, b)
-if cond
-    out = a;
-else
-    out = b;
-end
+if cond, out = a; else, out = b; end
 end

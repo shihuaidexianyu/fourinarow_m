@@ -1,5 +1,6 @@
 function [next_state, apply_info] = apply_action(state, action)
-%APPLY_ACTION Apply one valid action and update terminal flags.
+%APPLY_ACTION 应用一步合法动作并更新终局标志。
+%   判定顺序：先检查胜利，再检查平局，否则切换玩家。
 
 if ~is_valid_action(state, action)
     error('GameError:InvalidAction', 'Invalid action row=%d col=%d', action.row, action.col);
@@ -7,10 +8,11 @@ end
 
 next_state = state;
 player = state.current_player;
-next_state.board(action.row, action.col) = player;
+next_state.board(action.row, action.col) = player;  % 落子
 next_state.last_action = action;
 next_state.move_count = state.move_count + 1;
 
+% 1) 检查胜利
 [is_win, winning_cells, winning_line] = check_winner(next_state, action);
 if is_win
     next_state.game_over = true;
@@ -29,11 +31,13 @@ if is_win
     return;
 end
 
+% 2) 检查平局
 is_draw = check_draw(next_state);
 if is_draw
     next_state.game_over = true;
     next_state.result = 'draw';
 else
+    % 3) 未结束 → 切换玩家
     next_state.current_player = 3 - state.current_player;
 end
 
