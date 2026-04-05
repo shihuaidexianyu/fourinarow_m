@@ -22,12 +22,8 @@ else
     [win, rect] = PsychImaging('OpenWindow', screen_idx, bg, [100, 100, 1200, 900]);
 end
 
-% ---- 光标 ----
-if isfield(config, 'ui') && isfield(config.ui, 'hide_cursor') && config.ui.hide_cursor
-    HideCursor(win);
-else
-    ShowCursor;
-end
+% ---- 光标：默认显示 ----
+ShowCursor;
 
 % ---- 字体 ----
 Screen('TextFont', win, 'Microsoft YaHei UI');   % 支持中文的字体
