@@ -94,5 +94,8 @@ project_root/
 ## 注意事项
 
 - 第一版 agent 为 `random`。
+- 现在支持可替换 agent：在 `app/load_config.m` 中设置 `config.agent.player_fn` 即可。
+  - 例如：`config.agent.player_fn = @random_agent_play;`
+  - 也可填函数名字符串：`config.agent.player_fn = 'random_agent_play';`
 - 若屏幕物理尺寸读取异常，可在 `app/load_config.m` 中将 `use_manual_screen_size` 设为 `true` 并填写手动尺寸。
 - marker 默认使用 `send_marker_stub`（控制台打印）；实际 EEG/MEG 环境可替换 `config.marker.callback`。

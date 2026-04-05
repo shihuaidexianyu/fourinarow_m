@@ -62,7 +62,7 @@ try
                 [config, trial_log] = emit_and_log(config, trial_log, 'game_start', GetSecs(), struct());
                 state_name = 'in_game';
 
-            % ============ 对局中 ============
+                % ============ 对局中 ============
             case 'in_game'
                 transient_ui.illegal_until = -inf;  % 非法提示过期时刻（初始无提示）
 
@@ -87,7 +87,7 @@ try
                         [action, meta] = human_mouse_player_play(obs, config, struct('ui', ui, 'layout', layout));
                         actor = 'human';
                     else
-                        [action, meta] = random_agent_play(obs, config.agent, struct());
+                        [action, meta] = call_agent_player(obs, config.agent, struct());
                         if config.agent.move_delay_sec > 0
                             WaitSecs(config.agent.move_delay_sec);
                         end
@@ -166,7 +166,7 @@ try
                     state_name = 'result';
                 end
 
-            % ============ 结果展示 ============
+                % ============ 结果展示 ============
             case 'result'
                 % 发送游戏结束 marker
                 if strcmp(state.result, 'black_win')
@@ -222,7 +222,7 @@ try
                     end
                 end
 
-            % ============ 清理 ============
+                % ============ 清理 ============
             case 'cleanup'
                 is_running = false;
 
@@ -276,4 +276,39 @@ end
 function out = ternary(cond, a, b)
 %TERNARY 三目运算辅助。
 if cond, out = a; else, out = b; end
+end
+
+function [action, meta] = call_agent_player(obs, agent_config, runtime_context)
+%CALL_AGENT_PLAYER 统一可替换 agent 调用入口。
+% 支持：
+%   1) agent_config.player_fn = @your_agent_play
+%   2) agent_config.player_fn = 'your_agent_play'
+%   3) 未设置 player_fn 时，根据 agent_config.type 回退。
+
+if isfield(agent_config, 'player_fn') && ~isempty(agent_config.player_fn)
+    fn = agent_config.player_fn;
+elseif isfield(agent_config, 'type')
+    switch lower(string(agent_config.type))
+        case "random"
+            fn = @random_agent_play;
+        otherwise
+            error('AgentError:UnknownType', ...
+                'Unknown agent type: %s. Set config.agent.player_fn to a valid agent function.', ...
+                string(agent_config.type));
+    end
+else
+    error('AgentError:NoAgentConfigured', ...
+        'Agent is not configured. Set config.agent.player_fn or config.agent.type.');
+end
+
+if ischar(fn) || isstring(fn)
+    fn = str2func(char(fn));
+end
+
+if ~isa(fn, 'function_handle')
+    error('AgentError:InvalidFunction', ...
+        'config.agent.player_fn must be a function handle or function name string.');
+end
+
+[action, meta] = fn(obs, agent_config, runtime_context);
 end
