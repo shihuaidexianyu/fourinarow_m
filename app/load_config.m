@@ -50,7 +50,6 @@ config.marker.enable_illegal_click_marker = true;   % 非法点击是否打 mark
 config.marker.callback = @send_marker_stub;         % marker 回调函数（默认为控制台打印）
 
 % ---- Agent ----
-config.agent.type = 'random';                       % 电脑策略类型（兼容字段）
 config.agent.player_fn = @random_agent_play;        % 可替换 agent：函数句柄或函数名字符串
 config.agent.move_delay_sec = 0.0;                  % 电脑落子后额外延迟（秒）
 

@@ -283,22 +283,12 @@ function [action, meta] = call_agent_player(obs, agent_config, runtime_context)
 % 支持：
 %   1) agent_config.player_fn = @your_agent_play
 %   2) agent_config.player_fn = 'your_agent_play'
-%   3) 未设置 player_fn 时，根据 agent_config.type 回退。
 
 if isfield(agent_config, 'player_fn') && ~isempty(agent_config.player_fn)
     fn = agent_config.player_fn;
-elseif isfield(agent_config, 'type')
-    switch lower(string(agent_config.type))
-        case "random"
-            fn = @random_agent_play;
-        otherwise
-            error('AgentError:UnknownType', ...
-                'Unknown agent type: %s. Set config.agent.player_fn to a valid agent function.', ...
-                string(agent_config.type));
-    end
 else
     error('AgentError:NoAgentConfigured', ...
-        'Agent is not configured. Set config.agent.player_fn or config.agent.type.');
+        'Agent is not configured. Set config.agent.player_fn to a valid agent function.');
 end
 
 if ischar(fn) || isstring(fn)

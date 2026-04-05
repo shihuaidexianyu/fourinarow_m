@@ -48,7 +48,6 @@ project_root/
     draw_buttons.m
     hit_test_cell.m
     hit_test_button.m
-    confirm_exit_dialog.m
 
   markers/
     send_marker_stub.m

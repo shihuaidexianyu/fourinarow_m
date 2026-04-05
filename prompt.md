@@ -213,7 +213,7 @@ config.marker.enable = true;
 config.marker.enable_illegal_click_marker = true;
 config.marker.callback = @send_marker_stub;
 
-config.agent.type = 'random';
+config.agent.player_fn = @random_agent_play;
 config.agent.move_delay_sec = 0.0;
 
 config.logging.enable = true;
@@ -227,7 +227,7 @@ config.logging.version = 'v1';
 2. 观察距离固定为硬编码参数。
 3. 非法提示时长为硬编码配置项。
 4. marker 是否启用、非法点击是否打 marker 都为配置项。
-5. 第一版 agent 仅实现 `random`。
+5. 第一版 agent 仅实现 `random_agent_play`，并通过 `config.agent.player_fn` 配置。
 
 ---
 
@@ -499,10 +499,9 @@ player 不直接修改棋盘，不直接判断胜负，不直接绘图。
 
 在任意允许退出的状态中按 ESC 时：
 
-1. 弹出确认界面或确认对话逻辑
-2. 若用户确认，则记录中止事件
-3. 设置结果为 `aborted`
-4. 进入退出 / 清理状态
+1. 直接记录中止事件
+2. 设置结果为 `aborted`
+3. 进入退出 / 清理状态
 
 ---
 
@@ -1027,10 +1026,9 @@ trial.illegal_click_count
 
 用户在允许状态下按 ESC：
 
-1. 弹出确认
-2. 若确认，则记录中止
-3. 保存日志
-4. 退出程序
+1. 直接记录中止
+2. 保存日志
+3. 退出程序
 
 ## 20.4 PTB 运行失败
 
@@ -1076,7 +1074,6 @@ project_root/
     draw_buttons.m
     hit_test_cell.m
     hit_test_button.m
-    confirm_exit_dialog.m
 
   markers/
     send_marker_stub.m
@@ -1129,9 +1126,9 @@ project_root/
 * 绘制结果页
 * 发送 stimulus_result_shown
 
-11. 结果页等待按钮选择
-12. 根据按钮决定重开、返回开始页或退出
-13. 最终保存日志并清理 PTB
+1. 结果页等待按钮选择
+2. 根据按钮决定重开、返回开始页或退出
+3. 最终保存日志并清理 PTB
 
 ---
 
