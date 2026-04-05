@@ -3,6 +3,7 @@ function ui = open_window_and_init_ui(config)
 %   设置文本渲染器、字体、颜色、按钮样式等。
 
 PsychDefaultSetup(2);                                   % 归一化颜色范围为 0~1
+KbName('UnifyKeyNames');                                % 统一跨平台键名映射
 Screen('Preference', 'SkipSyncTests', 1);
 Screen('Preference', 'VBLTimestampingMode', -1);
 Screen('Preference', 'TextRenderer', 1);                % 启用高质量渲染器，支持 CJK
@@ -22,8 +23,8 @@ else
     [win, rect] = PsychImaging('OpenWindow', screen_idx, bg, [100, 100, 1200, 900]);
 end
 
-% ---- 光标：默认显示 ----
-ShowCursor;
+% ---- 光标：实验期间隐藏 ----
+HideCursor;
 
 % ---- 字体 ----
 Screen('TextFont', win, 'Microsoft YaHei UI');   % 支持中文的字体

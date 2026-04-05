@@ -6,6 +6,20 @@ if nargin < 5, config = struct(); end
 
 Screen('FillRect', ui.win, ui.colors.bg);
 draw_board(ui, layout);
+
+% 键盘模式下的当前选中格高亮
+if isfield(transient_ui, 'selected_cell') && ~isempty(transient_ui.selected_cell)
+    sel = transient_ui.selected_cell;
+    if numel(sel) == 2
+        r = sel(1);
+        c = sel(2);
+        if r >= 1 && r <= size(layout.cell_rects, 1) && c >= 1 && c <= size(layout.cell_rects, 2)
+            rect = squeeze(layout.cell_rects(r, c, :))';
+            Screen('FrameRect', ui.win, ui.colors.highlight, rect, 4);
+        end
+    end
+end
+
 draw_pieces(ui, layout, state);
 
 % ---- 决定状态栏文字 ----

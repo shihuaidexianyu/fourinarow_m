@@ -4,7 +4,9 @@
 
 - 分层目录结构（app/core/players/ui_ptb/markers/logging/utils）
 - 核心规则引擎（落子、合法性、胜负/平局）
-- PTB 基础 UI（开始页、对局页、结果页、按钮和格子命中）
+- PTB 基础 UI（开始页、对局页、结果页）
+- 键盘交互（方向键移动光标 + 确认键落子，按键可配置）
+- 固定 trial 数的自动实验流程（无“再来一局”按钮）
 - marker 映射与统一发射接口
 - 实验日志结构与 `.mat` 保存
 - 核心逻辑测试脚本
@@ -34,7 +36,7 @@ project_root/
     check_draw.m
 
   players/
-    human_mouse_player_play.m
+    human_keyboard_player_play.m
     random_agent_play.m
 
   ui_ptb/
@@ -45,9 +47,6 @@ project_root/
     draw_result_screen.m
     draw_board.m
     draw_pieces.m
-    draw_buttons.m
-    hit_test_cell.m
-    hit_test_button.m
 
   markers/
     send_marker_stub.m
@@ -93,6 +92,8 @@ project_root/
 ## 注意事项
 
 - 第一版 agent 为 `random`。
+- 人类输入为键盘模式，默认按键来自 `app/load_config.m` 中的 `config.controls`。
+- 每次 `run_game` 会生成一个 `experiment_id`，并固定执行 `config.game.num_trials` 局。
 - 现在支持可替换 agent：在 `app/load_config.m` 中设置 `config.agent.player_fn` 即可。
   - 例如：`config.agent.player_fn = @random_agent_play;`
   - 也可填函数名字符串：`config.agent.player_fn = 'random_agent_play';`

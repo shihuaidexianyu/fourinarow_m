@@ -35,10 +35,9 @@ board_h_px = config.game.rows * cell_px;   % 棋盘总高
 
 % ---- UI 预留高度 ----
 title_h  = 80;     % 标题区
-status_h = 70;     % 状态文字区
-button_h = 200;    % 按钮区
-margin_h = 80;     % 边距
-reserved_h = title_h + status_h + button_h + margin_h;
+status_h = 90;     % 状态文字区（含说明/提示）
+margin_h = 90;     % 边距
+reserved_h = title_h + status_h + margin_h;
 
 % ---- 安全显示检查 ----
 assert_display_fits(screen_w_px, screen_h_px, board_w_px, board_h_px, reserved_h, struct( ...
@@ -62,24 +61,6 @@ for r = 1:config.game.rows
     end
 end
 
-% ---- 按钮矩形 ----
-btn_w   = 320;
-btn_h   = 68;
-btn_gap = 24;
-
-% 开始页按钮
-start_btn = [round((screen_w_px - btn_w)/2), round(board_rect(4) + 48), ...
-    round((screen_w_px - btn_w)/2) + btn_w, round(board_rect(4) + 48) + btn_h];
-
-% 结果页三个按钮（垂直排列）
-res_btn_top = round(board_rect(4) + 48);
-result_buttons.replay = [round((screen_w_px - btn_w)/2), res_btn_top, ...
-    round((screen_w_px - btn_w)/2)+btn_w, res_btn_top+btn_h];
-result_buttons.back_to_start = [round((screen_w_px - btn_w)/2), res_btn_top + btn_h + btn_gap, ...
-    round((screen_w_px - btn_w)/2)+btn_w, res_btn_top + 2*btn_h + btn_gap];
-result_buttons.exit_game = [round((screen_w_px - btn_w)/2), res_btn_top + 2*(btn_h + btn_gap), ...
-    round((screen_w_px - btn_w)/2)+btn_w, res_btn_top + 3*btn_h + 2*btn_gap];
-
 % ---- 输出 ----
 layout.screen_width_cm  = screen_w_cm;
 layout.screen_height_cm = screen_h_cm;
@@ -88,8 +69,6 @@ layout.cell_size_px     = cell_px;
 layout.piece_diameter_px = piece_diameter_px;
 layout.board_rect       = board_rect;
 layout.cell_rects       = cell_rects;
-layout.start_button     = start_btn;
-layout.result_buttons   = result_buttons;
 layout.title_y          = board_rect(2) - 90;   % 标题 Y 坐标（棋盘上方）
 layout.status_y         = board_rect(4) + 40;   % 状态文字 Y 坐标（棋盘下方）
 end

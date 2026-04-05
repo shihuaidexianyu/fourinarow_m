@@ -9,6 +9,7 @@ config.game.connect_n = 4;             % 连几子获胜
 config.game.first_player = 1;          % 先手：1=黑方, 2=白方
 config.game.human_player = 1;          % 人类执子
 config.game.agent_player = 2;          % 电脑执子
+config.game.num_trials = 10;           % 固定试次数（每次 run_game 连续完成）
 
 if config.game.human_player == config.game.agent_player
     error('ConfigError:PlayerColorConflict', ...
@@ -28,7 +29,11 @@ config.display.fullscreen = true;                    % 是否全屏
 % ---- 界面文本 ----
 config.ui.illegal_message_duration_sec = 0.8;       % 非法动作提示时长（秒）
 config.ui.title_text = '四子棋';
-config.ui.instruction_text = '请点击开始按钮进入对局。';
+config.ui.instruction_text = ['实验说明：\n' ...
+    '1) 使用方向键移动光标（上下左右）\n' ...
+    '2) 使用确认键落子\n' ...
+    '3) 共进行固定试次，对局将自动推进\n' ...
+    '4) 按 ESC 可中止实验'];
 config.ui.show_config_summary = true;               % 开始页是否显示配置摘要
 config.ui.turn_black_text = '轮到：黑方';
 config.ui.turn_white_text = '轮到：白方';
@@ -37,12 +42,18 @@ config.ui.black_win_text = '黑方获胜';
 config.ui.white_win_text = '白方获胜';
 config.ui.draw_text = '平局';
 config.ui.game_over_text = '游戏结束';
-config.ui.start_button_text = '开始';
-config.ui.replay_button_text = '再来一局';
-config.ui.back_button_text = '返回开始界面';
-config.ui.exit_button_text = '退出程序';
-config.ui.exit_confirm_text = '是否退出游戏？\n\nY：退出    N：继续';
-config.ui.result_hint_text = '点击按钮继续，或按 ESC 退出。';
+config.ui.start_hint_text = '按确认键开始实验，按 ESC 退出';
+config.ui.result_hint_text = '结果将自动进入下一局（或按 ESC 退出）';
+config.ui.result_display_duration_sec = 1.0;        % 结果页自动停留时长（秒）
+
+% ---- 键盘交互配置 ----
+% 支持 PTB KbName 可识别的键名，可按实验需要修改。
+config.controls.up = {'UpArrow'};
+config.controls.down = {'DownArrow'};
+config.controls.left = {'LeftArrow'};
+config.controls.right = {'RightArrow'};
+config.controls.confirm = {'Return', 'Enter', 'space'};
+config.controls.abort = {'ESCAPE'};
 
 % ---- Marker / EEG 打标 ----
 config.marker.enable = true;                        % 是否启用 marker

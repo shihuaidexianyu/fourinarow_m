@@ -1,5 +1,5 @@
 function draw_result_screen(ui, layout, state, config)
-%DRAW_RESULT_SCREEN 绘制结果页：棋盘（含高亮）、结果文字、三个按钮。
+%DRAW_RESULT_SCREEN 绘制结果页：棋盘（含高亮）、结果文字、自动进入下一局提示。
 
 if nargin < 4, config = struct(); end
 
@@ -23,16 +23,8 @@ end
 
 draw_text(ui.win, title, 'center', layout.title_y, ui.colors.text);
 
-% ---- 按钮 ----
-labels = { ...
-    get_cfg_text(config, has_ui_cfg, 'replay_button_text', 'Play Again'), ...
-    get_cfg_text(config, has_ui_cfg, 'back_button_text',   'Back to Start'), ...
-    get_cfg_text(config, has_ui_cfg, 'exit_button_text',   'Exit')};
-
-draw_buttons(ui, layout.result_buttons, ...
-    {'replay', 'back_to_start', 'exit_game'}, ...
-    labels, ...
-    'result', config);
+hint = get_cfg_text(config, has_ui_cfg, 'result_hint_text', 'Auto continue to next trial, or press ESC to exit.');
+draw_text(ui.win, hint, 'center', layout.status_y, ui.colors.text);
 end
 
 function out = get_cfg_text(config, has_ui_cfg, field_name, fallback)

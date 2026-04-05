@@ -1,9 +1,22 @@
-function trial = init_trial_log(config, ui, layout)
+function trial = init_trial_log(config, ui, layout, experiment_id, trial_index, total_trials)
 %INIT_TRIAL_LOG 初始化单局日志结构体。
-%   包含游戏 ID、时间、配置快照、屏幕参数等。
+%   包含实验 ID、游戏 ID、时间、配置快照、屏幕参数等。
+
+if nargin < 4 || isempty(experiment_id)
+	experiment_id = char(java.util.UUID.randomUUID);
+end
+if nargin < 5 || isempty(trial_index)
+	trial_index = 1;
+end
+if nargin < 6 || isempty(total_trials)
+	total_trials = 1;
+end
 
 trial = struct();
+trial.experiment_id  = experiment_id;               % 一次 run_game 的统一实验 ID
 trial.game_id        = char(java.util.UUID.randomUUID);   % 每局唯一 ID
+trial.trial_index    = trial_index;                 % 当前是第几局
+trial.total_trials   = total_trials;                % 总局数（固定 trials）
 trial.start_datetime = char(datetime('now', 'Format', 'yyyy-MM-dd HH:mm:ss.SSS'));
 trial.end_datetime   = '';
 trial.result         = 'ongoing';
