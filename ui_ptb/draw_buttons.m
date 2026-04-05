@@ -16,7 +16,12 @@ for i = 1:numel(ids)
     if ischar(label)
         label = double(label);
     end
-    DrawFormattedText(ui.win, label, 'center', 'center', ui.button_style.text, [], [], [], [], [], rect);
+    tb = Screen('TextBounds', ui.win, label);
+    tw = tb(3) - tb(1);
+    th = tb(4) - tb(2);
+    tx = rect(1) + round((rect(3) - rect(1) - tw) / 2);
+    ty = rect(2) + round((rect(4) - rect(2) - th) / 2);
+    Screen('DrawText', ui.win, label, tx, ty, ui.button_style.text);
 end
 
 if strcmp(screen_name, 'result')

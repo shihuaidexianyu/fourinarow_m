@@ -78,5 +78,5 @@ layout.cell_rects = cell_rects;
 layout.start_button = start_btn;
 layout.result_buttons = result_buttons;
 layout.title_y = board_rect(2) - 90;
-layout.status_y = board_rect(4) + 18;
+layout.status_y = board_rect(4) + 40;
 end
