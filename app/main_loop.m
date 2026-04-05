@@ -28,8 +28,11 @@ try
         return;
     end
 
-    % 防止开始页确认键被后续页面误判
-    wait_until_no_key_down(1.0);
+    key_release_guard_sec = 0.15;
+    if isfield(config, 'timing') && isfield(config.timing, 'key_release_guard_sec') && ...
+            ~isempty(config.timing.key_release_guard_sec)
+        key_release_guard_sec = config.timing.key_release_guard_sec;
+    end
 
     emit_marker(config, 'session_enter_game', start_stimulus_time, ...
         struct('experiment_id', experiment_id, 'total_trials', total_trials));
@@ -55,7 +58,7 @@ try
         end
 
         % 防止注视点阶段按键残留到首手
-        wait_until_no_key_down(1.0);
+        wait_until_no_key_down(key_release_guard_sec);
 
         [config, trial_log] = emit_and_log(config, trial_log, 'game_start', GetSecs(), ...
             struct('experiment_id', experiment_id, 'trial_index', trial_index, 'total_trials', total_trials));
@@ -200,7 +203,7 @@ try
                     struct('result', 'aborted', 'phase', 'inter_trial_interval', 'trial_index', trial_index));
                 break;
             end
-            wait_until_no_key_down(1.0);
+            wait_until_no_key_down(key_release_guard_sec);
         end
     end
 
