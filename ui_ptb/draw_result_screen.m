@@ -7,19 +7,19 @@ draw_pieces(ui, layout, state);
 
 switch state.result
     case 'black_win'
-        title = '黑方胜利';
+        title = 'Black wins';
     case 'white_win'
-        title = '白方胜利';
+        title = 'White wins';
     case 'draw'
-        title = '平局';
+        title = 'Draw';
     otherwise
-        title = '对局结束';
+        title = 'Game Over';
 end
 
 DrawFormattedText(ui.win, title, 'center', layout.title_y, ui.colors.text);
 
 draw_buttons(ui, layout.result_buttons, ...
     {'replay', 'back_to_start', 'exit_game'}, ...
-    {'再来一局', '返回开始界面', '退出程序'}, ...
+    {'Play Again', 'Back to Start', 'Exit'}, ...
     'result');
 end

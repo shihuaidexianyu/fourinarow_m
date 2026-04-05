@@ -6,8 +6,18 @@ if ~config.logging.enable
 end
 
 save_dir = config.logging.save_dir;
-if ~exist(save_dir, 'dir')
-    mkdir(save_dir);
+if ~isfolder(save_dir)
+    if isfield(config, 'runtime') && isfield(config.runtime, 'project_root') && ~isfolder(save_dir)
+        if ~contains(save_dir, ':') && ~startsWith(save_dir, filesep)
+            save_dir = fullfile(config.runtime.project_root, save_dir);
+        end
+    end
+
+    [ok, msg] = mkdir(save_dir);
+    if ~ok
+        error('LoggingError:CreateDirFailed', ...
+            'Failed to create log directory: %s (%s)', save_dir, msg);
+    end
 end
 
 ts = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss_SSS'));

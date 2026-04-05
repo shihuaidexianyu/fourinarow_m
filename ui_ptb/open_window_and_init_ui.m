@@ -3,12 +3,13 @@ function ui = open_window_and_init_ui(config)
 
 PsychDefaultSetup(2);
 Screen('Preference', 'SkipSyncTests', 1);
+Screen('Preference', 'VBLTimestampingMode', -1);
 
-bg = [128, 128, 128];
-white = [255, 255, 255];
+bg = [0.5, 0.5, 0.5];
+white = [1, 1, 1];
 black = [0, 0, 0];
-line_col = [20, 20, 20];
-accent = [255, 80, 0];
+line_col = [0.08, 0.08, 0.08];
+accent = [1.0, 0.31, 0.0];
 
 screen_idx = config.display.screen_index;
 if config.display.fullscreen
@@ -28,11 +29,11 @@ ui.colors.white = white;
 ui.colors.black = black;
 ui.colors.grid = line_col;
 ui.colors.highlight = accent;
-ui.colors.text = [10, 10, 10];
+ui.colors.text = [0.04, 0.04, 0.04];
 
-ui.button_style.fill = [210, 210, 210];
-ui.button_style.border = [50, 50, 50];
-ui.button_style.text = [20, 20, 20];
+ui.button_style.fill = [0.82, 0.82, 0.82];
+ui.button_style.border = [0.2, 0.2, 0.2];
+ui.button_style.text = [0.08, 0.08, 0.08];
 
 Priority(MaxPriority(win));
 end

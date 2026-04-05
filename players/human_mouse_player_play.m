@@ -46,7 +46,7 @@ while true
                 meta.illegal_col = col;
                 meta.illegal_time = GetSecs();
 
-                transient.status_text = '非法动作，请重试';
+                transient.status_text = 'Illegal move. Please try again.';
                 transient.illegal_until = GetSecs() + duration;
                 draw_game_screen(ui, layout, struct( ...
                     'board', obs.board, ...

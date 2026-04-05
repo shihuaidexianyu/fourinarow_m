@@ -23,8 +23,8 @@ config.display.screen_index = max(Screen('Screens'));
 config.display.fullscreen = true;
 
 config.ui.illegal_message_duration_sec = 0.8;
-config.ui.title_text = '四子棋';
-config.ui.instruction_text = '请点击开始按钮进入对局。';
+config.ui.title_text = 'Four-in-a-Row';
+config.ui.instruction_text = 'Click START to begin.';
 config.ui.show_config_summary = true;
 
 config.marker.enable = true;

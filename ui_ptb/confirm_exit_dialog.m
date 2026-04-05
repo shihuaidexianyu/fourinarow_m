@@ -4,7 +4,7 @@ function should_exit = confirm_exit_dialog(ui)
 should_exit = false;
 
 Screen('FillRect', ui.win, ui.colors.bg);
-DrawFormattedText(ui.win, '确认退出？\n\nY: 退出    N: 继续', 'center', 'center', ui.colors.text);
+DrawFormattedText(ui.win, 'Exit game?\n\nY: Exit    N: Continue', 'center', 'center', ui.colors.text);
 Screen('Flip', ui.win);
 
 while true

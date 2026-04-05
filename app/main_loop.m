@@ -7,6 +7,7 @@ if ~exist('Screen', 'file')
 end
 
 trial_log = [];
+cleanup_obj = onCleanup(@safe_cleanup); %#ok<NASGU>
 
 try
     ui = open_window_and_init_ui(config);
@@ -56,7 +57,7 @@ try
                 state_name = 'in_game';
 
             case 'in_game'
-                transient_ui.status_text = sprintf('当前回合：%s', ternary(state.current_player==1, '黑方', '白方'));
+                transient_ui.status_text = sprintf('Turn: %s', ternary(state.current_player==1, 'Black', 'White'));
                 transient_ui.illegal_until = -inf;
 
                 while ~state.game_over
@@ -209,10 +210,6 @@ try
         save_trial_log(trial_log, config);
     end
 
-    if exist('ui', 'var') && isstruct(ui) && isfield(ui, 'win') && ~isempty(ui.win)
-        sca;
-        ShowCursor;
-    end
 catch ME
     if ~isempty(trial_log)
         try
@@ -224,12 +221,24 @@ catch ME
         end
     end
 
-    try
-        sca;
-        ShowCursor;
-    catch
-    end
     rethrow(ME);
+end
+end
+
+function safe_cleanup()
+try
+    Priority(0);
+catch
+end
+
+try
+    ShowCursor;
+catch
+end
+
+try
+    sca;
+catch
 end
 end
 

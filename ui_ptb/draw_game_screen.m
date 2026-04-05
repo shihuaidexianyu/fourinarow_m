@@ -15,14 +15,14 @@ if isfield(transient_ui, 'status_text')
 end
 
 if isfield(transient_ui, 'illegal_until') && GetSecs() <= transient_ui.illegal_until
-    status_text = '非法动作，请重试';
+    status_text = 'Illegal move. Please try again.';
 end
 
 if isempty(status_text)
     if state.current_player == 1
-        status_text = '当前回合：黑方';
+        status_text = 'Turn: Black';
     else
-        status_text = '当前回合：白方';
+        status_text = 'Turn: White';
     end
 end
 
