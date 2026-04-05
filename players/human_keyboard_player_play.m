@@ -112,14 +112,56 @@ end
 codes = [];
 for i = 1:numel(names)
     name_i = char(names{i});
-    code_i = KbName(name_i);
-    if isempty(code_i) || any(isnan(code_i))
-        error('ConfigError:InvalidKeyName', 'Invalid key name in config.controls: %s', name_i);
+    candidates = key_name_candidates(name_i);
+    resolved = false;
+
+    for j = 1:numel(candidates)
+        try
+            code_i = KbName(candidates{j});
+            if ~isempty(code_i) && ~any(isnan(code_i))
+                codes = [codes, code_i(:)']; %#ok<AGROW>
+                resolved = true;
+                break;
+            end
+        catch
+            % 当前平台不支持该别名，继续尝试
+        end
     end
-    codes = [codes, code_i(:)']; %#ok<AGROW>
+
+    if ~resolved
+        error('ConfigError:InvalidKeyName', ...
+            'Invalid key name in config.controls: %s', name_i);
+    end
 end
 
 codes = unique(codes);
+end
+
+function out = key_name_candidates(name_in)
+%KEY_NAME_CANDIDATES 键名别名兼容（跨平台/PTB 版本）。
+name = strtrim(char(name_in));
+lower_name = lower(name);
+
+switch lower_name
+    case {'enter', 'numpadenter', 'kp_enter'}
+        out = {'Return', 'return'};
+    case {'return'}
+        out = {'Return', 'return'};
+    case {'space', 'spacebar'}
+        out = {'space', 'Space'};
+    case {'esc', 'escape'}
+        out = {'ESCAPE', 'Escape'};
+    case {'up', 'uparrow'}
+        out = {'UpArrow', 'uparrow'};
+    case {'down', 'downarrow'}
+        out = {'DownArrow', 'downarrow'};
+    case {'left', 'leftarrow'}
+        out = {'LeftArrow', 'leftarrow'};
+    case {'right', 'rightarrow'}
+        out = {'RightArrow', 'rightarrow'};
+    otherwise
+        out = {name};
+end
 end
 
 function wait_key_release()

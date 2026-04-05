@@ -3,13 +3,13 @@ function trial = init_trial_log(config, ui, layout, experiment_id, trial_index, 
 %   包含实验 ID、游戏 ID、时间、配置快照、屏幕参数等。
 
 if nargin < 4 || isempty(experiment_id)
-	experiment_id = char(java.util.UUID.randomUUID);
+    experiment_id = char(java.util.UUID.randomUUID);
 end
 if nargin < 5 || isempty(trial_index)
-	trial_index = 1;
+    trial_index = 1;
 end
 if nargin < 6 || isempty(total_trials)
-	total_trials = 1;
+    total_trials = 1;
 end
 
 trial = struct();

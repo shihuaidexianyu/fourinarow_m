@@ -52,7 +52,7 @@ config.controls.up = {'UpArrow'};
 config.controls.down = {'DownArrow'};
 config.controls.left = {'LeftArrow'};
 config.controls.right = {'RightArrow'};
-config.controls.confirm = {'Return', 'Enter', 'space'};
+config.controls.confirm = {'Return', 'space'};
 config.controls.abort = {'ESCAPE'};
 
 % ---- Marker / EEG 打标 ----
