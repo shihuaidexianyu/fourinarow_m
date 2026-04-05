@@ -45,6 +45,12 @@ config.ui.game_over_text = '游戏结束';
 config.ui.start_hint_text = '按确认键开始实验，按 ESC 退出';
 config.ui.result_hint_text = '结果将自动进入下一局（或按 ESC 退出）';
 config.ui.result_display_duration_sec = 1.0;        % 结果页自动停留时长（秒）
+config.ui.fixation_deg = 0.8;                       % 注视点总长度视角（度）
+config.ui.fixation_thickness_deg = 0.08;            % 注视点线宽视角（度）
+
+% ---- 时序配置 ----
+config.timing.pre_trial_fixation_sec = 0.8;         % 每局开始前注视点时长（秒）
+config.timing.inter_trial_interval_sec = 1.0;       % 局间间隔（秒）
 
 % ---- 键盘交互配置 ----
 % 支持 PTB KbName 可识别的键名，可按实验需要修改。

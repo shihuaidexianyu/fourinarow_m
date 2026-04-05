@@ -22,14 +22,10 @@ else
 end
 
 keycodes = build_keycode_map(player_config);
-last_key_code = [];
+[~, ~, last_key_code] = KbCheck(-1);
 
 while true
     [is_down, key_time, key_code] = KbCheck(-1);
-    if isempty(last_key_code)
-        last_key_code = false(size(key_code));
-    end
-
     if ~is_down
         last_key_code = false(size(key_code));
         WaitSecs(0.005);

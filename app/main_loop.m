@@ -28,6 +28,9 @@ try
         return;
     end
 
+    % 防止开始页确认键被后续页面误判
+    wait_until_no_key_down(1.0);
+
     emit_marker(config, 'session_enter_game', start_stimulus_time, ...
         struct('experiment_id', experiment_id, 'total_trials', total_trials));
 
@@ -36,6 +39,23 @@ try
         state = init_game(config);
         trial_log = init_trial_log(config, ui, layout, experiment_id, trial_index, total_trials);
         human_cursor = init_cursor_from_board(state.board);
+
+        % 每局开始前展示注视点页面
+        draw_fixation_screen(ui, config, layout);
+        Screen('Flip', ui.win);
+        aborted_on_fixation = wait_duration_or_abort(config.timing.pre_trial_fixation_sec, config.controls.abort);
+        if aborted_on_fixation
+            [config, trial_log] = emit_and_log(config, trial_log, 'game_abort_esc', GetSecs(), ...
+                struct('result', 'aborted', 'phase', 'pre_trial_fixation', 'trial_index', trial_index));
+            state.result = 'aborted';
+            state.game_over = true;
+            trial_log = finalize_trial_log(trial_log, state);
+            save_trial_log(trial_log, config);
+            break;
+        end
+
+        % 防止注视点阶段按键残留到首手
+        wait_until_no_key_down(1.0);
 
         [config, trial_log] = emit_and_log(config, trial_log, 'game_start', GetSecs(), ...
             struct('experiment_id', experiment_id, 'trial_index', trial_index, 'total_trials', total_trials));
@@ -169,6 +189,19 @@ try
         if strcmp(state.result, 'aborted')
             break;
         end
+
+        % 局间间隔（最后一局后不等待）
+        if trial_index < total_trials
+            Screen('FillRect', ui.win, ui.colors.bg);
+            Screen('Flip', ui.win);
+            aborted_on_iti = wait_duration_or_abort(config.timing.inter_trial_interval_sec, config.controls.abort);
+            if aborted_on_iti
+                emit_marker(config, 'game_abort_esc', GetSecs(), ...
+                    struct('result', 'aborted', 'phase', 'inter_trial_interval', 'trial_index', trial_index));
+                break;
+            end
+            wait_until_no_key_down(1.0);
+        end
     end
 
 catch ME
@@ -215,14 +248,10 @@ end
 function choice = wait_start_choice(controls)
 %WAIT_START_CHOICE 开始页等待按键：确认开始 / ESC 中止。
 keycodes = build_control_keycodes(controls);
-last_key_code = [];
+[~, ~, last_key_code] = KbCheck(-1);
 
 while true
     [is_down, ~, key_code] = KbCheck(-1);
-    if isempty(last_key_code)
-        last_key_code = false(size(key_code));
-    end
-
     if is_down
         pressed_edge = key_code & ~last_key_code;
         if any(pressed_edge(keycodes.abort))
@@ -254,6 +283,25 @@ while GetSecs() < t_end
     [is_down, ~, key_code] = KbCheck(-1);
     if is_down && any(key_code(abort_codes))
         aborted = true;
+        return;
+    end
+    WaitSecs(0.005);
+end
+end
+
+function wait_until_no_key_down(timeout_sec)
+%WAIT_UNTIL_NO_KEY_DOWN 等待所有按键释放（带超时保护）。
+if nargin < 1
+    timeout_sec = 1.0;
+end
+
+t0 = GetSecs();
+while true
+    [is_down, ~, ~] = KbCheck(-1);
+    if ~is_down
+        return;
+    end
+    if GetSecs() - t0 > timeout_sec
         return;
     end
     WaitSecs(0.005);
