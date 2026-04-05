@@ -35,7 +35,7 @@ try
 
                     [~, ~, keyCode] = KbCheck;
                     if keyCode(KbName('ESCAPE'))
-                        if confirm_exit_dialog(ui)
+                        if confirm_exit_dialog(ui, config)
                             emit_marker(config, 'game_abort_esc', GetSecs(), struct('result', 'aborted'));
                             is_running = false;
                             state_name = 'cleanup';
@@ -60,8 +60,8 @@ try
                 transient_ui.illegal_until = -inf;
 
                 while ~state.game_over
-                    transient_ui.status_text = sprintf('Turn: %s', ternary(state.current_player==1, 'Black', 'White'));
-                    draw_game_screen(ui, layout, state, transient_ui);
+                    transient_ui.status_text = ternary(state.current_player==1, config.ui.turn_black_text, config.ui.turn_white_text);
+                    draw_game_screen(ui, layout, state, transient_ui, config);
                     [~, board_ready_time] = Screen('Flip', ui.win);
 
                     obs.board = state.board;
@@ -100,7 +100,7 @@ try
                                     'move_count', state.move_count, 'is_illegal', true);
                                 [config, trial_log] = emit_and_log(config, trial_log, 'response_illegal_click', meta.illegal_time, payload);
                             end
-                            transient_ui.status_text = 'Illegal move. Please try again.';
+                            transient_ui.status_text = config.ui.illegal_text;
                             transient_ui.illegal_until = GetSecs() + config.ui.illegal_message_duration_sec;
                         end
                         continue;
@@ -123,7 +123,7 @@ try
                     move_player = state.current_player;
                     state = next_state;
 
-                    draw_game_screen(ui, layout, state, transient_ui);
+                    draw_game_screen(ui, layout, state, transient_ui, config);
                     [~, stimulus_time] = Screen('Flip', ui.win);
 
                     if strcmp(actor, 'human')
@@ -155,7 +155,7 @@ try
                     [config, trial_log] = emit_and_log(config, trial_log, 'game_end_draw', GetSecs(), struct('result', state.result, 'move_count', state.move_count));
                 end
 
-                draw_result_screen(ui, layout, state, struct());
+                draw_result_screen(ui, layout, state, config);
                 [~, result_stim_time] = Screen('Flip', ui.win);
                 [config, trial_log] = emit_and_log(config, trial_log, 'stimulus_result_shown', result_stim_time, struct('result', state.result));
 
@@ -190,7 +190,7 @@ try
 
                     [~, ~, keyCode] = KbCheck;
                     if keyCode(KbName('ESCAPE'))
-                        if confirm_exit_dialog(ui)
+                        if confirm_exit_dialog(ui, config)
                             state_name = 'cleanup';
                             is_running = false;
                             waiting = false;

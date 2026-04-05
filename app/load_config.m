@@ -23,10 +23,23 @@ config.display.screen_index = max(Screen('Screens'));
 config.display.fullscreen = true;
 
 config.ui.illegal_message_duration_sec = 0.8;
-config.ui.title_text = 'Four-in-a-Row';
-config.ui.instruction_text = 'Click START to begin.';
+config.ui.title_text = '四子棋';
+config.ui.instruction_text = '请点击开始按钮进入对局。';
 config.ui.show_config_summary = true;
 config.ui.hide_cursor = false;
+config.ui.turn_black_text = '轮到：黑方';
+config.ui.turn_white_text = '轮到：白方';
+config.ui.illegal_text = '非法动作，请重试';
+config.ui.black_win_text = '黑方获胜';
+config.ui.white_win_text = '白方获胜';
+config.ui.draw_text = '平局';
+config.ui.game_over_text = '游戏结束';
+config.ui.start_button_text = '开始';
+config.ui.replay_button_text = '再来一局';
+config.ui.back_button_text = '返回开始界面';
+config.ui.exit_button_text = '退出程序';
+config.ui.exit_confirm_text = '是否退出游戏？\n\nY：退出    N：继续';
+config.ui.result_hint_text = '点击按钮继续，或按 ESC 退出。';
 
 config.marker.enable = true;
 config.marker.enable_illegal_click_marker = true;

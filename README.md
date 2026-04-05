@@ -9,6 +9,13 @@
 - 实验日志结构与 `.mat` 保存
 - 核心逻辑测试脚本
 
+## 开发机版本
+
+- **OS**：Windows 11
+- **MATLAB**：`24.2.0.2712019 (R2024b)`（64-bit）
+- **Psychtoolbox**：`3.0.19`（Build date: `Jul 31 2024`）
+- **GPU / OpenGL Renderer**：NVIDIA GeForce RTX 4060 Laptop GPU（OpenGL 4.6）
+
 ## 目录结构
 
 ```text
@@ -68,7 +75,7 @@ project_root/
 
 ## 运行方式
 
-1. 安装 Matlab（建议 R2021+）与 Psychtoolbox。
+1. 安装 MATLAB（R2021a+）与 Psychtoolbox（3.0.19+）。
 2. 在 Matlab 将工作目录切到项目根目录。
 3. 执行：`app/run_game`。
 
@@ -89,4 +96,3 @@ project_root/
 - 第一版 agent 为 `random`。
 - 若屏幕物理尺寸读取异常，可在 `app/load_config.m` 中将 `use_manual_screen_size` 设为 `true` 并填写手动尺寸。
 - marker 默认使用 `send_marker_stub`（控制台打印）；实际 EEG/MEG 环境可替换 `config.marker.callback`。
-

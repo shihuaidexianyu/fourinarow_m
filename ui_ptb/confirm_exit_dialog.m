@@ -1,10 +1,19 @@
-function should_exit = confirm_exit_dialog(ui)
+function should_exit = confirm_exit_dialog(ui, config)
 %CONFIRM_EXIT_DIALOG Simple ESC confirmation overlay.
+
+if nargin < 2
+    config = struct();
+end
 
 should_exit = false;
 
+dialog_text = 'Exit game?\n\nY: Exit    N: Continue';
+if isfield(config, 'ui') && isfield(config.ui, 'exit_confirm_text')
+    dialog_text = config.ui.exit_confirm_text;
+end
+
 Screen('FillRect', ui.win, ui.colors.bg);
-DrawFormattedText(ui.win, 'Exit game?\n\nY: Exit    N: Continue', 'center', 'center', ui.colors.text);
+draw_text(ui.win, dialog_text, 'center', 'center', ui.colors.text);
 Screen('Flip', ui.win);
 
 KbReleaseWait;

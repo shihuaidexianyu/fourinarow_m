@@ -4,6 +4,7 @@ function ui = open_window_and_init_ui(config)
 PsychDefaultSetup(2);
 Screen('Preference', 'SkipSyncTests', 1);
 Screen('Preference', 'VBLTimestampingMode', -1);
+Screen('Preference', 'TextRenderer', 1);
 
 bg = [0.5, 0.5, 0.5];
 white = [1, 1, 1];
