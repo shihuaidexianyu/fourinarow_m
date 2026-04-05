@@ -215,22 +215,27 @@ end
 function choice = wait_start_choice(controls)
 %WAIT_START_CHOICE 开始页等待按键：确认开始 / ESC 中止。
 keycodes = build_control_keycodes(controls);
+last_key_code = [];
 
 while true
-    [is_down, ~, key_code] = KbCheck;
-    if is_down
-        if any(key_code(keycodes.abort))
-            choice = 'abort';
-            wait_key_release();
-            return;
-        end
-        if any(key_code(keycodes.confirm))
-            choice = 'start';
-            wait_key_release();
-            return;
-        end
-        wait_key_release();
+    [is_down, ~, key_code] = KbCheck(-1);
+    if isempty(last_key_code)
+        last_key_code = false(size(key_code));
     end
+
+    if is_down
+        pressed_edge = key_code & ~last_key_code;
+        if any(pressed_edge(keycodes.abort))
+            choice = 'abort';
+            return;
+        end
+        if any(pressed_edge(keycodes.confirm))
+            choice = 'start';
+            return;
+        end
+    end
+
+    last_key_code = key_code;
     WaitSecs(0.005);
 end
 end
@@ -246,10 +251,9 @@ abort_codes = key_names_to_codes(abort_keys);
 t_end = GetSecs() + duration_sec;
 
 while GetSecs() < t_end
-    [is_down, ~, key_code] = KbCheck;
+    [is_down, ~, key_code] = KbCheck(-1);
     if is_down && any(key_code(abort_codes))
         aborted = true;
-        wait_key_release();
         return;
     end
     WaitSecs(0.005);
@@ -331,13 +335,6 @@ switch lower_name
         out = {'RightArrow', 'rightarrow'};
     otherwise
         out = {name};
-end
-end
-
-function wait_key_release()
-%WAIT_KEY_RELEASE 等待全部按键释放，用于去抖。
-while KbCheck
-    WaitSecs(0.005);
 end
 end
 

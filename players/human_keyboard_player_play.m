@@ -22,25 +22,32 @@ else
 end
 
 keycodes = build_keycode_map(player_config);
+last_key_code = [];
 
 while true
-    [is_down, key_time, key_code] = KbCheck;
+    [is_down, key_time, key_code] = KbCheck(-1);
+    if isempty(last_key_code)
+        last_key_code = false(size(key_code));
+    end
+
     if ~is_down
+        last_key_code = false(size(key_code));
         WaitSecs(0.005);
         continue;
     end
 
+    pressed_edge = key_code & ~last_key_code;
+
     % ESC 中止
-    if any(key_code(keycodes.abort))
+    if any(pressed_edge(keycodes.abort))
         meta.aborted = true;
-        wait_key_release();
         return;
     end
 
     moved = false;
 
     % 确认落子
-    if any(key_code(keycodes.confirm))
+    if any(pressed_edge(keycodes.confirm))
         row = cursor.row;
         col = cursor.col;
         if obs.board(row, col) == 0
@@ -52,21 +59,20 @@ while true
             meta.illegal_col = col;
             meta.illegal_time = key_time;
         end
-        wait_key_release();
         return;
     end
 
     % 光标移动
-    if any(key_code(keycodes.up))
+    if any(pressed_edge(keycodes.up))
         cursor.row = max(1, cursor.row - 1);
         moved = true;
-    elseif any(key_code(keycodes.down))
+    elseif any(pressed_edge(keycodes.down))
         cursor.row = min(size(obs.board, 1), cursor.row + 1);
         moved = true;
-    elseif any(key_code(keycodes.left))
+    elseif any(pressed_edge(keycodes.left))
         cursor.col = max(1, cursor.col - 1);
         moved = true;
-    elseif any(key_code(keycodes.right))
+    elseif any(pressed_edge(keycodes.right))
         cursor.col = min(size(obs.board, 2), cursor.col + 1);
         moved = true;
     end
@@ -76,8 +82,7 @@ while true
         draw_game_screen(ui, layout, state, transient_ui, config);
         Screen('Flip', ui.win);
     end
-
-    wait_key_release();
+    last_key_code = key_code;
 end
 end
 
@@ -164,9 +169,3 @@ switch lower_name
 end
 end
 
-function wait_key_release()
-%WAIT_KEY_RELEASE 按键去抖：等待全部键释放。
-while KbCheck
-    WaitSecs(0.005);
-end
-end
