@@ -1,7 +1,7 @@
 function main_loop(config)
 %MAIN_LOOP 程序主循环 / 状态机驱动。
 %   状态流转：wait_start -> in_game -> result -> cleanup
-%   任何状态下按 ESC 均可弹出退出确认。
+%   ESC 直接退出（无二次确认）。
 
 % 检查 Psychtoolbox 是否可用
 if ~exist('Screen', 'file')
@@ -39,16 +39,14 @@ try
                         WaitSecs(0.05);
                     end
 
-                    % 检测 ESC 退出
+                    % 检测 ESC 退出（直接退出）
                     [~, ~, keyCode] = KbCheck;
                     if keyCode(KbName('ESCAPE'))
-                        if confirm_exit_dialog(ui, config)
-                            emit_marker(config, 'game_abort_esc', GetSecs(), struct('result', 'aborted'));
-                            is_running = false;
-                            state_name = 'cleanup';
-                            break;
-                        end
+                        emit_marker(config, 'game_abort_esc', GetSecs(), struct('result', 'aborted'));
+                        is_running = false;
+                        state_name = 'cleanup';
                         WaitSecs(0.1);
+                        break;
                     end
                 end
 
@@ -215,11 +213,11 @@ try
 
                     [~, ~, keyCode] = KbCheck;
                     if keyCode(KbName('ESCAPE'))
-                        if confirm_exit_dialog(ui, config)
-                            state_name = 'cleanup';
-                            is_running = false;
-                            waiting = false;
-                        end
+                        [config, trial_log] = emit_and_log(config, trial_log, 'game_abort_esc', GetSecs(), struct('result', 'aborted'));
+                        state.result = 'aborted';
+                        state_name = 'cleanup';
+                        is_running = false;
+                        waiting = false;
                         WaitSecs(0.1);
                     end
                 end
