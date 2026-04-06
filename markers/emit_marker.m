@@ -6,6 +6,7 @@ if ~config.marker.enable
     return;
 end
 
+% 检查事件映射表和事件名有效性
 if ~isfield(config, 'events') || ~isa(config.events, 'containers.Map')
     error('MarkerError:EventMapMissing', 'config.events is missing or invalid.');
 end

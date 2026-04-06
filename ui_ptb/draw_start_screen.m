@@ -12,9 +12,24 @@ y = y_after_title + 18;
 
 % 配置摘要
 if config.ui.show_config_summary
-    human_color = ternary(config.game.human_player==1, '黑方', '白方');
-    agent_color = ternary(config.game.agent_player==1, '黑方', '白方');
-    first_color = ternary(config.game.first_player==1, '黑方', '白方');
+    if config.game.human_player == 1
+        human_color = '黑方';
+    else
+        human_color = '白方';
+    end
+
+    if config.game.agent_player == 1
+        agent_color = '黑方';
+    else
+        agent_color = '白方';
+    end
+
+    if config.game.first_player == 1
+        first_color = '黑方';
+    else
+        first_color = '白方';
+    end
+
     summary = sprintf(['棋盘：%d×%d（自由落点）\n' ...
         '人类：%s    电脑：%s\n' ...
         '先手：%s'], ...
@@ -29,8 +44,4 @@ if isfield(config.ui, 'start_hint_text')
     y = y_after_summary + 22;
     draw_text(ui.win, config.ui.start_hint_text, 'center', y, ui.colors.text);
 end
-end
-
-function out = ternary(cond, a, b)
-if cond, out = a; else, out = b; end
 end

@@ -20,7 +20,7 @@ try
 
     % ===== 开始页：仅键盘控制 =====
     draw_start_screen(ui, layout, config);
-    [~, start_stimulus_time] = Screen('Flip', ui.win);
+    [~, start_stimulus_time] = Screen('Flip', ui.win); % 实验开始时刻 = 开始页刺激呈现完成时刻
     start_choice = wait_start_choice(config.controls);
 
     if strcmp(start_choice, 'abort')
@@ -28,20 +28,21 @@ try
         return;
     end
 
-    key_release_guard_sec = 0.15;
-    if isfield(config, 'timing') && isfield(config.timing, 'key_release_guard_sec') && ...
-            ~isempty(config.timing.key_release_guard_sec)
-        key_release_guard_sec = config.timing.key_release_guard_sec;
+    if ~isfield(config, 'timing') || ~isfield(config.timing, 'key_release_guard_sec') || ...
+            isempty(config.timing.key_release_guard_sec)
+        error('ConfigError:MissingKeyReleaseGuardSec', ...
+            'config.timing.key_release_guard_sec is required.');
     end
+    key_release_guard_sec = config.timing.key_release_guard_sec; % 防止开始页按键残留到首手
 
     emit_marker(config, 'session_enter_game', start_stimulus_time, ...
         struct('experiment_id', experiment_id, 'total_trials', total_trials));
 
     % ===== 固定 trials 主循环 =====
     for trial_index = 1:total_trials
-        state = init_game(config);
+        state = init_game(config); % 主要通过传递state来驱动状态机，其他变量如 transient_ui 仅用于界面显示，不参与游戏逻辑
         trial_log = init_trial_log(config, ui, layout, experiment_id, trial_index, total_trials);
-        human_cursor = init_cursor_from_board(state.board);
+        human_cursor = init_cursor_from_board(state.board); % 人类玩家的键盘光标位置（初始为第一个空格）
 
         % 每局开始前展示注视点页面
         draw_fixation_screen(ui, config, layout);
@@ -67,7 +68,11 @@ try
         transient_ui.illegal_until = -inf;  % 非法提示过期时刻（初始无提示）
 
         while ~state.game_over
-            transient_ui.status_text = ternary(state.current_player==1, config.ui.turn_black_text, config.ui.turn_white_text);
+            if state.current_player == 1
+                transient_ui.status_text = config.ui.turn_black_text;
+            else
+                transient_ui.status_text = config.ui.turn_white_text;
+            end
             if state.current_player == config.game.human_player
                 transient_ui.selected_cell = [human_cursor.row, human_cursor.col];
             else
@@ -241,11 +246,6 @@ if ~isempty(trial_log) && isfield(config_in, 'events') && isa(config_in.events, 
     code = config_in.events(event_name);
     trial_log = log_marker_event(trial_log, code, event_name, timestamp, payload);
 end
-end
-
-function out = ternary(cond, a, b)
-%TERNARY 三目运算辅助。
-if cond, out = a; else, out = b; end
 end
 
 function choice = wait_start_choice(controls)
