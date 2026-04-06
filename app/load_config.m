@@ -29,7 +29,7 @@ else
     config.display.screen_index = 0;                     % 延迟到运行期再校验 PTB
 end
 config.display.fullscreen = true;                    % 是否全屏
-config.display.ptb_skip_sync_tests = false;          % 是否跳过 PTB 同步测试（实验建议 false）
+config.display.ptb_skip_sync_tests = true;           % 是否跳过 PTB 同步测试（开发机默认 true，正式实验建议改回 false）
 config.display.ptb_vbl_timestamping_mode = [];       % PTB VBLTimestampingMode（空=使用 PTB 默认）
 
 % ---- 界面文本 ----
