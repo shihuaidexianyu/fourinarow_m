@@ -23,8 +23,14 @@ config.display.viewing_distance_cm = 60;            % 观察距离（厘米）
 config.display.use_manual_screen_size = false;       % 是否手动指定屏幕物理尺寸
 config.display.manual_screen_width_cm = [];          % 手动屏幕宽度（厘米）
 config.display.manual_screen_height_cm = [];         % 手动屏幕高度（厘米）
-config.display.screen_index = max(Screen('Screens'));% 使用的屏幕编号
+if exist('Screen', 'file')
+    config.display.screen_index = max(Screen('Screens')); % 使用的屏幕编号
+else
+    config.display.screen_index = 0;                     % 延迟到运行期再校验 PTB
+end
 config.display.fullscreen = true;                    % 是否全屏
+config.display.ptb_skip_sync_tests = false;          % 是否跳过 PTB 同步测试（实验建议 false）
+config.display.ptb_vbl_timestamping_mode = [];       % PTB VBLTimestampingMode（空=使用 PTB 默认）
 
 % ---- 界面文本 ----
 config.ui.illegal_message_duration_sec = 0.8;       % 非法动作提示时长（秒）

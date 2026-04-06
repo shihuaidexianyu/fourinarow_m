@@ -68,11 +68,13 @@ try
         transient_ui.illegal_until = -inf;  % 非法提示过期时刻（初始无提示）
 
         while ~state.game_over
+            % 根据player选择要显示的提示词
             if state.current_player == 1
                 transient_ui.status_text = config.ui.turn_black_text;
             else
                 transient_ui.status_text = config.ui.turn_white_text;
             end
+
             if state.current_player == config.game.human_player
                 transient_ui.selected_cell = [human_cursor.row, human_cursor.col];
             else
@@ -279,7 +281,7 @@ if duration_sec <= 0
     return;
 end
 
-abort_codes = key_names_to_codes(abort_keys);
+abort_codes = resolve_key_names_to_codes(abort_keys);
 t_end = GetSecs() + duration_sec;
 
 while GetSecs() < t_end
@@ -325,68 +327,8 @@ end
 function keycodes = build_control_keycodes(controls)
 %BUILD_CONTROL_KEYCODES 解析配置中的控制键到 keycode。
 keycodes = struct();
-keycodes.confirm = key_names_to_codes(controls.confirm);
-keycodes.abort = key_names_to_codes(controls.abort);
-end
-
-function codes = key_names_to_codes(names)
-%KEY_NAMES_TO_CODES 支持 char/string/cellstr。
-if ischar(names) || isstring(names)
-    names = {char(names)};
-end
-
-codes = [];
-for i = 1:numel(names)
-    name_i = char(names{i});
-    candidates = key_name_candidates(name_i);
-    resolved = false;
-
-    for j = 1:numel(candidates)
-        try
-            code_i = KbName(candidates{j});
-            if ~isempty(code_i) && ~any(isnan(code_i))
-                codes = [codes, code_i(:)']; %#ok<AGROW>
-                resolved = true;
-                break;
-            end
-        catch
-            % 该别名在当前平台不可用，继续尝试下一个
-        end
-    end
-
-    if ~resolved
-        error('ConfigError:InvalidKeyName', ...
-            'Invalid key name in config.controls: %s', name_i);
-    end
-end
-codes = unique(codes);
-end
-
-function out = key_name_candidates(name_in)
-%KEY_NAME_CANDIDATES 键名别名兼容（跨平台/PTB 版本）。
-name = strtrim(char(name_in));
-lower_name = lower(name);
-
-switch lower_name
-    case {'enter', 'numpadenter', 'kp_enter'}
-        out = {'Return', 'return'};
-    case {'return'}
-        out = {'Return', 'return'};
-    case {'space', 'spacebar'}
-        out = {'space', 'Space'};
-    case {'esc', 'escape'}
-        out = {'ESCAPE', 'Escape'};
-    case {'up', 'uparrow'}
-        out = {'UpArrow', 'uparrow'};
-    case {'down', 'downarrow'}
-        out = {'DownArrow', 'downarrow'};
-    case {'left', 'leftarrow'}
-        out = {'LeftArrow', 'leftarrow'};
-    case {'right', 'rightarrow'}
-        out = {'RightArrow', 'rightarrow'};
-    otherwise
-        out = {name};
-end
+keycodes.confirm = resolve_key_names_to_codes(controls.confirm);
+keycodes.abort = resolve_key_names_to_codes(controls.abort);
 end
 
 function [action, meta] = call_agent_player(obs, agent_config, runtime_context)
@@ -403,7 +345,12 @@ else
 end
 
 if ischar(fn) || isstring(fn)
-    fn = str2func(char(fn));
+    fn_name = char(fn);
+    if ~(exist(fn_name, 'file') == 2 || exist(fn_name, 'builtin') == 5)
+        error('AgentError:FunctionNotFound', ...
+            'Agent function not found on MATLAB path: %s', fn_name);
+    end
+    fn = str2func(fn_name);
 end
 
 if ~isa(fn, 'function_handle')

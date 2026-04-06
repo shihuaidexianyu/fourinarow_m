@@ -96,72 +96,11 @@ end
 function keycodes = build_keycode_map(controls)
 %BUILD_KEYCODE_MAP 将配置的键名映射为 PTB 键码索引数组。
 keycodes = struct();
-keycodes.up = key_names_to_codes(controls.up);
-keycodes.down = key_names_to_codes(controls.down);
-keycodes.left = key_names_to_codes(controls.left);
-keycodes.right = key_names_to_codes(controls.right);
-keycodes.confirm = key_names_to_codes(controls.confirm);
-keycodes.abort = key_names_to_codes(controls.abort);
-end
-
-function codes = key_names_to_codes(names)
-%KEY_NAMES_TO_CODES 支持 char/string/cellstr 输入。
-if ischar(names) || isstring(names)
-    names = {char(names)};
-end
-
-codes = [];
-for i = 1:numel(names)
-    name_i = char(names{i});
-    candidates = key_name_candidates(name_i);
-    resolved = false;
-
-    for j = 1:numel(candidates)
-        try
-            code_i = KbName(candidates{j});
-            if ~isempty(code_i) && ~any(isnan(code_i))
-                codes = [codes, code_i(:)']; %#ok<AGROW>
-                resolved = true;
-                break;
-            end
-        catch
-            % 当前平台不支持该别名，继续尝试
-        end
-    end
-
-    if ~resolved
-        error('ConfigError:InvalidKeyName', ...
-            'Invalid key name in config.controls: %s', name_i);
-    end
-end
-
-codes = unique(codes);
-end
-
-function out = key_name_candidates(name_in)
-%KEY_NAME_CANDIDATES 键名别名兼容（跨平台/PTB 版本）。
-name = strtrim(char(name_in));
-lower_name = lower(name);
-
-switch lower_name
-    case {'enter', 'numpadenter', 'kp_enter'}
-        out = {'Return', 'return'};
-    case {'return'}
-        out = {'Return', 'return'};
-    case {'space', 'spacebar'}
-        out = {'space', 'Space'};
-    case {'esc', 'escape'}
-        out = {'ESCAPE', 'Escape'};
-    case {'up', 'uparrow'}
-        out = {'UpArrow', 'uparrow'};
-    case {'down', 'downarrow'}
-        out = {'DownArrow', 'downarrow'};
-    case {'left', 'leftarrow'}
-        out = {'LeftArrow', 'leftarrow'};
-    case {'right', 'rightarrow'}
-        out = {'RightArrow', 'rightarrow'};
-    otherwise
-        out = {name};
-end
+keycodes.up = resolve_key_names_to_codes(controls.up);
+keycodes.down = resolve_key_names_to_codes(controls.down);
+keycodes.left = resolve_key_names_to_codes(controls.left);
+keycodes.right = resolve_key_names_to_codes(controls.right);
+keycodes.confirm = resolve_key_names_to_codes(controls.confirm);
+keycodes.abort = resolve_key_names_to_codes(controls.abort);
 end
 
