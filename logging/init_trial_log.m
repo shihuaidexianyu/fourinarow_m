@@ -3,7 +3,7 @@ function trial = init_trial_log(config, ui, layout, experiment_id, trial_index, 
 %   包含实验序号、局序号、时间、配置快照、屏幕参数等。
 
 if nargin < 4 || isempty(experiment_id)
-    experiment_id = next_experiment_id(config.logging.save_dir);
+    experiment_id = next_experiment_id();
 end
 if nargin < 5 || isempty(trial_index)
     trial_index = 1;

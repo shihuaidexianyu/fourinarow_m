@@ -16,7 +16,7 @@ try
     ui = open_window_and_init_ui(config);           % 打开 PTB 窗口
     layout = compute_visual_layout(ui, config);     % 计算棋盘/按钮布局
     total_trials = config.game.num_trials;
-    experiment_id = next_experiment_id(config.logging.save_dir);
+    experiment_id = next_experiment_id();
 
     % ===== 开始页：仅键盘控制 =====
     draw_start_screen(ui, layout, config);
