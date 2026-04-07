@@ -69,9 +69,12 @@ config.controls.confirm = {'Return', 'space'};
 config.controls.abort = {'ESCAPE'};
 
 % ---- Marker / EEG 打标 ----
-config.marker.enable = true;                        % 是否启用 marker
+config.marker.enable = false;                        % 是否启用 marker
 config.marker.enable_illegal_click_marker = true;   % 非法点击是否打 marker
-config.marker.callback = @send_marker_stub;         % marker 回调函数（默认为控制台打印）
+config.marker.parallel_port_address = '0FF8';       % 并口地址（十六进制字符串）
+config.marker.pulse_width_sec = 0.004;              % 脉冲宽度（秒）
+config.marker.callback = @(event_code, event_name, timestamp, payload) ...
+    send_marker(event_code, event_name, timestamp, payload, config.marker); % marker 回调函数（并口发码）
 
 % ---- Agent ----
 config.agent.player_fn = @random_agent_play;        % 可替换 agent：函数句柄或函数名字符串
