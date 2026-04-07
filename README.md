@@ -1,31 +1,137 @@
-# Four-in-a-Row (Matlab + Psychtoolbox) v1
+# 四子棋实验（MATLAB + Psychtoolbox）
 
-本项目按照 `prompt.md` 的技术规格实现了一个 v1 版本的 **4×9 自由落点四子棋**（human vs random agent）框架，包含：
+一个用于行为/神经实验场景的四子棋任务框架（默认 `4×9` 棋盘，human vs random agent）。
 
-- 分层目录结构（app/core/players/ui_ptb/markers/logging/utils）
-- 核心规则引擎（落子、合法性、胜负/平局）
-- PTB 基础 UI（开始页、对局页、结果页）
-- 键盘交互（方向键移动光标 + 确认键落子，按键可配置）
-- 固定 trial 数的自动实验流程（无“再来一局”按钮）
-- marker 映射与统一发射接口
-- 实验日志结构与 `.mat` 保存
-- 核心逻辑测试脚本
+项目目标是：**可快速联调、配置集中、流程稳定、日志可追溯**。
 
-## 开发机版本
+---
 
-- **OS**：Windows 11
-- **MATLAB**：`24.2.0.2712019 (R2024b)`（64-bit）
-- **Psychtoolbox**：`3.0.19`（Build date: `Jul 31 2024`）
-- **GPU / OpenGL Renderer**：NVIDIA GeForce RTX 4060 Laptop GPU（OpenGL 4.6）
+## 功能概览
 
-## 目录结构
+- 固定 trial 数自动运行（每次 `run_game` 连续完成 `num_trials` 局）
+- 人类键盘操作 + agent 自动落子
+- 完整实验流程界面（开始页 / 注视点 / 对局页 / 结果页）
+- 非法按键/非法落子处理
+- Marker 统一发射接口（支持并口发码，失败自动降级打印）
+- 每局日志保存为 `.mat`，包含行为与 marker 事件
+- 参数集中在 `app/load_config.m`（包括按键 keycode）
+
+---
+
+## 环境要求
+
+- MATLAB（建议 R2021a+）
+- Psychtoolbox（建议 3.0.19+）
+- Windows 实验机（当前项目在 Windows 环境开发与使用）
+
+---
+
+## 快速开始
+
+1. 打开 MATLAB，并将当前目录切换到项目根目录。
+2. 运行：
+
+```matlab
+app/run_game
+```
+
+程序会自动：
+
+- 把项目子目录加入 MATLAB 路径
+- 加载 `app/load_config.m`
+- 进入主循环 `app/main_loop.m`
+
+---
+
+## 按键配置（统一在 config）
+
+按键不再通过额外解析文件转换，**直接在 `app/load_config.m` 中硬编码 keycode**：
+
+```matlab
+KbName('UnifyKeyNames');
+config.controls.up = KbName('UpArrow');
+config.controls.down = KbName('DownArrow');
+config.controls.left = KbName('LeftArrow');
+config.controls.right = KbName('RightArrow');
+config.controls.confirm = unique([KbName('Return'), KbName('space')]);
+config.controls.abort = KbName('ESCAPE');
+```
+
+说明：
+
+- `confirm` 可以配置多个键（如 `Return + space`）
+- `abort` 建议保留 `ESCAPE`
+
+---
+
+## 按键联调工具
+
+提供独立联调程序：`app/debug_key_name_probe.m`
+
+在 MATLAB 运行：
+
+```matlab
+debug_key_name_probe
+```
+
+行为：
+
+- 每次按键按下沿都会打印 PTB 键名
+- 支持同时按多个键
+- 按 `ESC` 退出
+
+适合在正式实验前快速核对键盘映射是否与预期一致。
+
+---
+
+## 主要配置项
+
+集中于 `app/load_config.m`：
+
+- `config.game.*`：棋盘尺寸、先手、人机方、试次数
+- `config.display.*`：视角、观察距离、屏幕选择、全屏、PTB 时序参数
+- `config.ui.*`：文本提示、结果页停留时长、注视点参数
+- `config.timing.*`：注视点时长、ITI、按键释放保护
+- `config.controls.*`：键盘 keycode
+- `config.marker.*`：是否启用 marker、并口地址、脉冲宽度、回调
+- `config.agent.*`：agent 函数入口与延时
+- `config.logging.*`：日志保存开关与目录
+
+---
+
+## Marker 机制
+
+- 事件名与事件码映射：`markers/marker_name_to_code.m`
+- 统一发射入口：`markers/emit_marker.m`
+- 默认并口发送：`markers/send_marker.m`
+
+`send_marker.m` 的默认流程：
+
+1. `outp(address, code)`
+2. 保持 `pulse_width_sec`
+3. `outp(address, 0)` 复位
+
+如果硬件接口初始化失败，会自动降级为控制台打印 marker，避免主流程中断。
+
+---
+
+## 日志输出
+
+- 每局 trial 都会初始化并持续记录行为/事件
+- 结束后通过 `logging/save_trial_log.m` 写入 `.mat`
+- 默认保存目录：`logs/`（运行时转为项目根目录下绝对路径）
+
+---
+
+## 目录结构（当前版本）
 
 ```text
-project_root/
+fourinarow_m/
   app/
     run_game.m
     main_loop.m
     load_config.m
+    debug_key_name_probe.m
 
   core/
     init_game.m
@@ -43,15 +149,17 @@ project_root/
     open_window_and_init_ui.m
     compute_visual_layout.m
     draw_start_screen.m
+    draw_fixation_screen.m
     draw_game_screen.m
     draw_result_screen.m
     draw_board.m
     draw_pieces.m
+    draw_text.m
 
   markers/
-    send_marker_stub.m
     marker_name_to_code.m
     emit_marker.m
+    send_marker.m
 
   logging/
     init_trial_log.m
@@ -59,43 +167,11 @@ project_root/
     log_illegal_click.m
     log_marker_event.m
     finalize_trial_log.m
+    next_experiment_id.m
     save_trial_log.m
 
   utils/
     deg2cm.m
     cm2px.m
     assert_display_fits.m
-
-  tests/
-    test_core.m
-    run_all_tests.m
 ```
-
-## 运行方式
-
-1. 安装 MATLAB（R2021a+）与 Psychtoolbox（3.0.19+）。
-2. 在 Matlab 将工作目录切到项目根目录。
-3. 执行：`app/run_game`。
-
-## 测试方式
-
-在 Matlab 中执行：`tests/run_all_tests`。
-
-目前测试覆盖以 `core` 逻辑为主，包含：
-
-- 初始化与合法动作数量
-- 横/纵/主对角/副对角胜利检测
-- 大于 4 连的整段返回
-- 平局判定
-- 非法动作拒绝
-
-## 注意事项
-
-- 第一版 agent 为 `random`。
-- 人类输入为键盘模式，默认按键来自 `app/load_config.m` 中的 `config.controls`。
-- 每次 `run_game` 会生成一个 `experiment_id`，并固定执行 `config.game.num_trials` 局。
-- 现在支持可替换 agent：在 `app/load_config.m` 中设置 `config.agent.player_fn` 即可。
-  - 例如：`config.agent.player_fn = @random_agent_play;`
-  - 也可填函数名字符串：`config.agent.player_fn = 'random_agent_play';`
-- 若屏幕物理尺寸读取异常，可在 `app/load_config.m` 中将 `use_manual_screen_size` 设为 `true` 并填写手动尺寸。
-- marker 默认使用 `send_marker_stub`（控制台打印）；实际 EEG/MEG 环境可替换 `config.marker.callback`。
