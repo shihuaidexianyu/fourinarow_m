@@ -94,13 +94,13 @@ cursor = struct('row', row, 'col', col);
 end
 
 function keycodes = build_keycode_map(controls)
-%BUILD_KEYCODE_MAP 将配置的键名映射为 PTB 键码索引数组。
+%BUILD_KEYCODE_MAP 从配置读取 PTB 键码索引数组。
 keycodes = struct();
-keycodes.up = resolve_key_names_to_codes(controls.up);
-keycodes.down = resolve_key_names_to_codes(controls.down);
-keycodes.left = resolve_key_names_to_codes(controls.left);
-keycodes.right = resolve_key_names_to_codes(controls.right);
-keycodes.confirm = resolve_key_names_to_codes(controls.confirm);
-keycodes.abort = resolve_key_names_to_codes(controls.abort);
+keycodes.up = controls.up;
+keycodes.down = controls.down;
+keycodes.left = controls.left;
+keycodes.right = controls.right;
+keycodes.confirm = controls.confirm;
+keycodes.abort = controls.abort;
 end
 

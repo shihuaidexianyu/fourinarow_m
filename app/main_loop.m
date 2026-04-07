@@ -281,7 +281,7 @@ if duration_sec <= 0
     return;
 end
 
-abort_codes = resolve_key_names_to_codes(abort_keys);
+abort_codes = abort_keys;
 t_end = GetSecs() + duration_sec;
 
 while GetSecs() < t_end
@@ -325,10 +325,10 @@ cursor = struct('row', row, 'col', col);
 end
 
 function keycodes = build_control_keycodes(controls)
-%BUILD_CONTROL_KEYCODES 解析配置中的控制键到 keycode。
+%BUILD_CONTROL_KEYCODES 从配置读取控制键 keycode。
 keycodes = struct();
-keycodes.confirm = resolve_key_names_to_codes(controls.confirm);
-keycodes.abort = resolve_key_names_to_codes(controls.abort);
+keycodes.confirm = controls.confirm;
+keycodes.abort = controls.abort;
 end
 
 function [action, meta] = call_agent_player(obs, agent_config, runtime_context)
