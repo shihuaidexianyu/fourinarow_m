@@ -3,7 +3,7 @@ function send_marker(event_code, event_name, timestamp, ~, marker_cfg)
 %   按 test.m 的硬件流程发码：outp(address, code) -> 短脉冲 -> outp(address, 0)。
 %
 %   输入参数：
-%   - event_code: 事件码（建议 1~255）
+%   - event_code: 事件码（ 1~255）
 %   - event_name: 事件名（用于告警/调试输出）
 %   - timestamp : 事件时间戳（用于回退日志输出）
 %   - marker_cfg: 可选配置结构体
@@ -15,24 +15,8 @@ function send_marker(event_code, event_name, timestamp, ~, marker_cfg)
 %   - 默认并口地址使用 0x0FF8（可由 marker_cfg.parallel_port_address 覆盖）
 %   - 默认脉冲宽度 0.004s（可由 marker_cfg.pulse_width_sec 覆盖）
 
-if ~isscalar(event_code) || ~isnumeric(event_code) || ~isfinite(event_code)
-    warning('MarkerWarning:InvalidEventCode', ...
-        'Invalid marker code for %s: %s', event_name, mat2str(event_code));
-    return;
-end
-
 event_code = round(double(event_code));
-if event_code < 1 || event_code > 255
-    warning('MarkerWarning:EventCodeOutOfRange', ...
-        'Marker code out of range [1,255] for %s: %d', event_name, event_code);
-    return;
-end
-
-if ~isstruct(marker_cfg)
-    error('MarkerError:InvalidConfig', ...
-        'marker_cfg must be a struct with marker configuration.');
-end
-
+% 声明静态变量
 persistent io_ready address pulse_width_sec
 if isempty(io_ready)
     % 首次调用时初始化：读取配置并尝试初始化 I/O。
@@ -68,10 +52,7 @@ end
 
 % 发送流程：写入事件码 -> 保持脉冲宽度 -> 拉低到 0（复位）
 outp(address, event_code);
-if exist('WaitSecs', 'file')
-    WaitSecs(pulse_width_sec);
-else
-    pause(pulse_width_sec);
-end
+WaitSecs(pulse_width_sec);
 outp(address, 0);
+
 end
