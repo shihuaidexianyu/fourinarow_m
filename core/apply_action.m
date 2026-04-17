@@ -3,7 +3,11 @@ function [next_state, apply_info] = apply_action(state, action)
 %   判定顺序：先检查胜利，再检查平局，否则切换玩家。
 
 if ~is_valid_action(state, action)
-    error('GameError:InvalidAction', 'Invalid action row=%d col=%d', action.row, action.col);
+    if isstruct(action) && isfield(action, 'row') && isfield(action, 'col')
+        error('GameError:InvalidAction', ...
+            'Invalid action row=%s col=%s', mat2str(action.row), mat2str(action.col));
+    end
+    error('GameError:InvalidAction', 'Invalid action.');
 end
 
 next_state = state;

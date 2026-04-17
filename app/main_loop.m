@@ -249,7 +249,7 @@ function [config_out, trial_log] = emit_and_log(config_in, trial_log, event_name
 config_out = config_in;
 emit_marker(config_in, event_name, timestamp, payload);
 
-if ~isempty(trial_log) && isKey(config_in.events, event_name)
+if ~isempty(trial_log)
     code = config_in.events(event_name);
     trial_log = log_marker_event(trial_log, code, event_name, timestamp, payload);
 end
@@ -301,10 +301,6 @@ end
 
 function wait_until_no_key_down(timeout_sec)
 %WAIT_UNTIL_NO_KEY_DOWN 等待所有按键释放（带超时保护）。
-if nargin < 1
-    timeout_sec = 1.0;
-end
-
 t0 = GetSecs();
 while true
     [is_down, ~, ~] = KbCheck(-1);
@@ -322,8 +318,8 @@ function cursor = init_cursor_from_board(board)
 %INIT_CURSOR_FROM_BOARD 初始化键盘光标位置。
 idx = find(board == 0, 1, 'first');
 if isempty(idx)
-    cursor = struct('row', 1, 'col', 1);
-    return;
+    error('GameError:NoCursorTarget', ...
+        'Cannot initialize the human cursor because the board has no empty cells.');
 end
 [row, col] = ind2sub(size(board), idx);
 cursor = struct('row', row, 'col', col);
@@ -342,9 +338,8 @@ function [action, meta] = call_agent_player(obs, agent_config, runtime_context)
 %   1) agent_config.player_fn = @your_agent_play
 %   2) agent_config.player_fn = 'your_agent_play'
 
-if isfield(agent_config, 'player_fn') && ~isempty(agent_config.player_fn)
-    fn = agent_config.player_fn;
-else
+fn = agent_config.player_fn;
+if isempty(fn)
     error('AgentError:NoAgentConfigured', ...
         'Agent is not configured. Set config.agent.player_fn to a valid agent function.');
 end

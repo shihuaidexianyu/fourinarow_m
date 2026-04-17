@@ -14,12 +14,7 @@ config = runtime_context.config;
 
 action = [];
 meta = struct('aborted', false, 'is_illegal', false);
-
-if isfield(runtime_context, 'cursor') && ~isempty(runtime_context.cursor)
-    cursor = runtime_context.cursor;
-else
-    cursor = default_cursor(obs.board);
-end
+cursor = runtime_context.cursor;
 
 keycodes = build_keycode_map(player_config);
 [~, ~, last_key_code] = KbCheck(-1);
@@ -80,17 +75,6 @@ while true
     end
     last_key_code = key_code;
 end
-end
-
-function cursor = default_cursor(board)
-%DEFAULT_CURSOR 默认光标：优先首个空格，否则左上角。
-idx = find(board == 0, 1, 'first');
-if isempty(idx)
-    cursor = struct('row', 1, 'col', 1);
-    return;
-end
-[row, col] = ind2sub(size(board), idx);
-cursor = struct('row', row, 'col', col);
 end
 
 function keycodes = build_keycode_map(controls)
