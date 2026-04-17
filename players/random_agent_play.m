@@ -3,9 +3,8 @@ function [action, meta] = random_agent_play(obs, ~, ~)
 
 legal = obs.legal_actions;
 if isempty(legal)
-    action = [];
-    meta = struct('reason', 'no_legal_action');
-    return;
+    error('AgentError:NoLegalAction', ...
+        'random_agent_play received an empty legal action list while the game is still ongoing.');
 end
 
 if ~ismatrix(legal) || size(legal, 2) ~= 2

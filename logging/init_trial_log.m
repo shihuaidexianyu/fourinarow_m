@@ -2,16 +2,6 @@ function trial = init_trial_log(config, ui, layout, experiment_id, trial_index, 
 %INIT_TRIAL_LOG 初始化单局日志结构体。
 %   包含实验序号、局序号、时间、配置快照、屏幕参数等。
 
-if nargin < 4 || isempty(experiment_id)
-    experiment_id = next_experiment_id();
-end
-if nargin < 5 || isempty(trial_index)
-    trial_index = 1;
-end
-if nargin < 6 || isempty(total_trials)
-    total_trials = 1;
-end
-
 trial = struct();
 trial.experiment_id  = experiment_id;               % 一次 run_game 的统一实验序号
 trial.game_id        = sprintf('%03d', trial_index);      % 局序号（当前 run 内）

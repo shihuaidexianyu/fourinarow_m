@@ -40,8 +40,6 @@ else
     y_after_summary = y_after_instruction;
 end
 
-if isfield(config.ui, 'start_hint_text')
-    y = y_after_summary + 22;
-    draw_text(ui.win, config.ui.start_hint_text, 'center', y, ui.colors.text);
-end
+y = y_after_summary + 22;
+draw_text(ui.win, config.ui.start_hint_text, 'center', y, ui.colors.text);
 end

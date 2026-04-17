@@ -9,17 +9,8 @@ end
 function draw_angle_cross_fixation(ui, config, layout)
 %DRAW_ANGLE_CROSS_FIXATION 按视觉角度绘制十字注视点。
 
-fix_deg = 0.8;
-thick_deg = 0.08;
-if isfield(config, 'ui') && isfield(config.ui, 'fixation_deg') && ~isempty(config.ui.fixation_deg)
-    fix_deg = config.ui.fixation_deg;
-end
-if isfield(config, 'ui') && isfield(config.ui, 'fixation_thickness_deg') && ~isempty(config.ui.fixation_thickness_deg)
-    thick_deg = config.ui.fixation_thickness_deg;
-end
-
-len_cm = deg2cm(fix_deg, config.display.viewing_distance_cm);
-thick_cm = deg2cm(thick_deg, config.display.viewing_distance_cm);
+len_cm = deg2cm(config.ui.fixation_deg, config.display.viewing_distance_cm);
+thick_cm = deg2cm(config.ui.fixation_thickness_deg, config.display.viewing_distance_cm);
 
 len_px = max(6, cm2px(len_cm, layout.px_per_cm));
 thick_px = max(2, cm2px(thick_cm, layout.px_per_cm));

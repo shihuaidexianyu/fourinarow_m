@@ -4,13 +4,9 @@ function ui = open_window_and_init_ui(config)
 
 PsychDefaultSetup(2);                                   % 归一化颜色范围为 0~1
 KbName('UnifyKeyNames');                                % 统一跨平台键名映射
-if isfield(config, 'display') && isfield(config.display, 'ptb_skip_sync_tests') && ...
-        ~isempty(config.display.ptb_skip_sync_tests)
-    Screen('Preference', 'SkipSyncTests', double(logical(config.display.ptb_skip_sync_tests)));
-end
+Screen('Preference', 'SkipSyncTests', double(logical(config.display.ptb_skip_sync_tests)));
 
-if isfield(config, 'display') && isfield(config.display, 'ptb_vbl_timestamping_mode') && ...
-        ~isempty(config.display.ptb_vbl_timestamping_mode)
+if ~isempty(config.display.ptb_vbl_timestamping_mode)
     Screen('Preference', 'VBLTimestampingMode', config.display.ptb_vbl_timestamping_mode);
 end
 

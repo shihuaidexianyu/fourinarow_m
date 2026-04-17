@@ -10,7 +10,7 @@ if ~exist('Screen', 'file')
 end
 
 trial_log = [];
-cleanup_obj = onCleanup(@safe_cleanup); %#ok<NASGU>  % 异常退出时确保 PTB 资源释放
+cleanup_obj = onCleanup(@safe_cleanup);  % 异常退出时确保 PTB 资源释放
 
 try
     ui = open_window_and_init_ui(config);           % 打开 PTB 窗口
@@ -28,11 +28,6 @@ try
         return;
     end
 
-    if ~isfield(config, 'timing') || ~isfield(config.timing, 'key_release_guard_sec') || ...
-            isempty(config.timing.key_release_guard_sec)
-        error('ConfigError:MissingKeyReleaseGuardSec', ...
-            'config.timing.key_release_guard_sec is required.');
-    end
     key_release_guard_sec = config.timing.key_release_guard_sec; % 防止开始页按键残留到首手
 
     emit_marker(config, 'session_enter_game', start_stimulus_time, ...
@@ -110,25 +105,33 @@ try
 
             % ---- 空动作处理（中止或非法输入）----
             if isempty(action)
-                if isfield(meta, 'aborted') && meta.aborted
-                    [config, trial_log] = emit_and_log(config, trial_log, 'game_abort_esc', GetSecs(), struct('result', 'aborted', 'trial_index', trial_index));
-                    state.result = 'aborted';
-                    state.game_over = true;
-                    break;
+                if strcmp(actor, 'human')
+                    if meta.aborted
+                        [config, trial_log] = emit_and_log(config, trial_log, 'game_abort_esc', GetSecs(), struct('result', 'aborted', 'trial_index', trial_index));
+                        state.result = 'aborted';
+                        state.game_over = true;
+                        break;
+                    end
+
+                    if meta.is_illegal
+                        trial_log = log_illegal_click(trial_log, state.current_player, ...
+                            meta.illegal_row, meta.illegal_col, meta.illegal_time, state.move_count);
+                        if config.marker.enable_illegal_click_marker
+                            payload = struct('player', state.current_player, 'row', meta.illegal_row, 'col', meta.illegal_col, ...
+                                'move_count', state.move_count, 'is_illegal', true, 'trial_index', trial_index);
+                            [config, trial_log] = emit_and_log(config, trial_log, 'response_illegal_click', meta.illegal_time, payload);
+                        end
+                        transient_ui.status_text = config.ui.illegal_text;
+                        transient_ui.illegal_until = GetSecs() + config.ui.illegal_message_duration_sec;
+                        continue;
+                    end
+
+                    error('InputError:EmptyHumanAction', ...
+                        'human_keyboard_player_play returned an empty action without aborted/is_illegal metadata.');
                 end
 
-                if isfield(meta, 'is_illegal') && meta.is_illegal
-                    trial_log = log_illegal_click(trial_log, state.current_player, ...
-                        meta.illegal_row, meta.illegal_col, meta.illegal_time, state.move_count);
-                    if config.marker.enable_illegal_click_marker
-                        payload = struct('player', state.current_player, 'row', meta.illegal_row, 'col', meta.illegal_col, ...
-                            'move_count', state.move_count, 'is_illegal', true, 'trial_index', trial_index);
-                        [config, trial_log] = emit_and_log(config, trial_log, 'response_illegal_click', meta.illegal_time, payload);
-                    end
-                    transient_ui.status_text = config.ui.illegal_text;
-                    transient_ui.illegal_until = GetSecs() + config.ui.illegal_message_duration_sec;
-                end
-                continue;
+                error('AgentError:EmptyAction', ...
+                    'Agent player returned an empty action while the game is still ongoing.');
             end
 
             % ---- 合法落子 ----
@@ -222,7 +225,9 @@ catch ME
             trial_log.result = 'aborted';
             trial_log.error = ME.message;
             save_trial_log(trial_log, config);
-        catch
+        catch log_error
+            warning('LoggingWarning:SaveFailedDuringException', ...
+                'Failed to save trial log while handling another error: %s', log_error.message);
         end
     end
 
@@ -244,7 +249,7 @@ function [config_out, trial_log] = emit_and_log(config_in, trial_log, event_name
 config_out = config_in;
 emit_marker(config_in, event_name, timestamp, payload);
 
-if ~isempty(trial_log) && isfield(config_in, 'events') && isa(config_in.events, 'containers.Map') && isKey(config_in.events, event_name)
+if ~isempty(trial_log) && isKey(config_in.events, event_name)
     code = config_in.events(event_name);
     trial_log = log_marker_event(trial_log, code, event_name, timestamp, payload);
 end

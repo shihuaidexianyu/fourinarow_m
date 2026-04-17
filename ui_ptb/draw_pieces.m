@@ -30,7 +30,7 @@ for r = 1:rows
 end
 
 % ---- 胜利高亮 ----
-if isfield(state, 'winning_cells') && ~isempty(state.winning_cells)
+if ~isempty(state.winning_cells)
     % 边框高亮
     for i = 1:size(state.winning_cells, 1)
         rr = state.winning_cells(i, 1);
@@ -40,7 +40,7 @@ if isfield(state, 'winning_cells') && ~isempty(state.winning_cells)
     end
 
     % 中心连线高亮
-    if isfield(state, 'winning_line') && ~isempty(state.winning_line.start_row)
+    if ~isempty(state.winning_line.start_row)
         p0 = cell_center(layout, state.winning_line.start_row, state.winning_line.start_col);
         p1 = cell_center(layout, state.winning_line.end_row,   state.winning_line.end_col);
         Screen('DrawLine', ui.win, ui.colors.highlight, p0(1), p0(2), p1(1), p1(2), 6);
